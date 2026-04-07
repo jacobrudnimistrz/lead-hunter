@@ -18,8 +18,6 @@ export async function checkDuplicate(data: {
   email?: string
   telefon?: string
 }): Promise<DuplicateResult> {
-  const conditions: string[] = []
-  
   // Match na nazwa + miasto (case-insensitive, trim)
   const nazwaClean = data.nazwa_firmy.trim().toLowerCase()
   const miastoClean = data.miasto.trim().toLowerCase()
@@ -65,7 +63,7 @@ export async function checkDuplicate(data: {
       id: existing.id,
       nazwa_firmy: existing.nazwa_firmy,
       miasto: existing.miasto,
-      owner_name: (existing.profiles as any)?.full_name ?? 'Nieznany',
+      owner_name: ((existing.profiles as unknown) as { full_name: string } | null)?.full_name ?? 'Nieznany',
       status: existing.status,
       matched_on
     }

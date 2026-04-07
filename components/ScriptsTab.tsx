@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { OUTREACH_SCRIPTS, OutreachScript } from '@/lib/scripts'
+import { OUTREACH_SCRIPTS } from '@/lib/scripts'
 import { NISZA_LABELS } from '@/lib/constants'
 
 const PLATFORM_BADGE_COLORS: Record<string, string> = {

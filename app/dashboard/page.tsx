@@ -5,6 +5,29 @@ import { AddLeadModal } from '@/components/AddLeadModal'
 import { useRouter } from 'next/navigation'
 import { NISZA_COLORS, NISZA_LABELS, STATUS_COLORS, STATUS_LABELS } from '@/lib/constants'
 import { ScriptsTab } from '@/components/ScriptsTab'
+import { User } from '@supabase/supabase-js'
+
+export type Lead = {
+  id: string;
+  nazwa_firmy: string;
+  miasto: string;
+  email?: string;
+  telefon?: string;
+  nisza: string;
+  status: string;
+  platforma?: string;
+  notatki?: string;
+  owner_id: string;
+  created_at: string;
+  channel?: string;
+  ai_hook?: string;
+  profiles: { full_name: string } | null;
+}
+
+export type Profile = {
+  id: string;
+  full_name: string;
+}
 
 // Kolory dla awatarów
 const AVATAR_COLORS = [
@@ -35,7 +58,7 @@ function getInitials(name?: string, email?: string) {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<'leady' | 'skrypty'>('leady')
-  const [leads, setLeads] = useState<any[]>([])
+  const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   
@@ -44,8 +67,8 @@ export default function Dashboard() {
   const [filterOwner, setFilterOwner] = useState('wszystkie')
   const [filterToCall, setFilterToCall] = useState(false)
   
-  const [profiles, setProfiles] = useState<any[]>([])
-  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [profiles, setProfiles] = useState<Profile[]>([])
+  const [currentUser, setCurrentUser] = useState<User | null>(null)
   
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({})
   const [editingNotes, setEditingNotes] = useState<Record<string, string>>({})
@@ -55,7 +78,7 @@ export default function Dashboard() {
   
   const router = useRouter()
 
-  const startEditingAiHook = (id: string, current: string) => {
+  const startEditingAiHook = (id: string, current?: string) => {
     setEditingAiHookId(id)
     setTempAiHook(current || "")
   }
@@ -106,7 +129,7 @@ export default function Dashboard() {
     return () => { supabase.removeChannel(channel) }
   }, [])
 
-  let filtered = leads.filter(l => {
+  const filtered = leads.filter(l => {
     if (filterToCall) {
       if (l.channel !== 'sms') return false
       if (l.status !== 'contacted' && l.status !== 'called_no_answer') return false
@@ -149,7 +172,7 @@ export default function Dashboard() {
     }
   }
 
-  const toggleRow = (id: string, currentNotes: string) => {
+  const toggleRow = (id: string, currentNotes?: string) => {
     setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }))
     if (!expandedRows[id]) {
       setEditingNotes(prev => ({ ...prev, [id]: currentNotes || '' }))
